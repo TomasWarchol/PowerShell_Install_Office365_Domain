@@ -1,0 +1,27 @@
+
+# Sprawdź, czy program Office 365 jest zainstalowany
+if ((Get-ItemProperty "HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*").DisplayName -contains "Microsoft Office 365") {
+    Write-Host "Program Office 365 jest już zainstalowany."
+}
+else {
+    # Pobierz lokalizację pliku instalacyjnego programu Office 365
+    $OfficeInstaller = "C:\Office365\setup.exe"
+
+    # Sprawdź, czy plik instalacyjny istnieje
+    if (Test-Path $OfficeInstaller) {
+        # Utwórz obiekt Process, aby uruchomić plik instalacyjny z politykami bez interakcji użytkownika
+        $Installer = Start-Process -FilePath $OfficeInstaller -ArgumentList "/configure Configuration.xml" -Wait -PassThru
+
+        # Sprawdź kod wyjścia procesu instalacji
+        if ($Installer.ExitCode -eq 0) {
+            Write-Host "Program Office 365 został pomyślnie zainstalowany."
+        } else {
+            Write-Host "Wystąpił błąd podczas instalacji programu Office 365. Kod wyjścia: $($Installer.ExitCode)"
+        }
+    } else {
+        Write-Host "Nie znaleziono pliku instalacyjnego programu Office 365."
+    }
+}
+
+
+
